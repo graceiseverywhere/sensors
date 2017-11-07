@@ -10,7 +10,8 @@ db_credentials.user = 'grace';
 db_credentials.host = 'datastructures.cqg9canqxxtt.us-east-2.rds.amazonaws.com';
 // db_credentials.host = process.env.AWSRDS_EP;
 db_credentials.database = 'sensors';
-db_credentials.password = process.env.AWSRDS_PW;
+db_credentials.password = 'gracie22';
+// process.env.AWSRDS_PW;
 db_credentials.port = 5432;
 
 app.get('/', function(req, res) {
@@ -22,12 +23,15 @@ app.get('/', function(req, res) {
              EXTRACT(MONTH FROM sensortime AT TIME ZONE 'America/New_York') as sensormonth, 
              count(*) as num_obs, 
              
-             sum (count(where potentsensor = motivated)) as total_motivated, 
-             sum (moment.duration().asMinutes()) if weightvalue >= 15 as running_time, 
+             sum (CASE WHEN potentsensor = 'motivated' THEN 1 ELSE 0 END) as total_motivated, 
+             sum (CASE WHEN fsrsensor >= 15 THEN 1 ELSE 0 END) as running_time 
+
              
-             FROM sensordata 
+             FROM gracesensors 
              GROUP BY sensormonth, sensorday;`;
              
+             
+             var q = `SELECT * FROM gracesensors;`
     client.connect();
     client.query(q, (qerr, qres) => {
         res.send(qres.rows);
@@ -41,3 +45,7 @@ app.listen(3000, function() {
 });
 
             //  sum (count(if weightvalue => 15)) as running_time,
+            //  sum (moment.duration().asMinutes()) if weightvalue >= 15 as running_time, 
+//   SELECT potentsensor FROM gracesensors WHERE potentsensor = 'motivated',
+//              SELECT potentsensor FROM gracesensors WHERE potentsensor = 'unmotivated',
+//              SELECT fsrsensor FROM gracesensors WHERE fsrsensor >= 15 
