@@ -15,7 +15,7 @@ console.log (device_url);
 // AWS RDS POSTGRESQL INSTANCE
 var db_credentials = new Object();
 db_credentials.user = 'grace';
-db_credentials.host = 'datastructures.cqg9canqxxtt.us-east-2.rds.amazonaws.comex';
+db_credentials.host = 'datastructures.cqg9canqxxtt.us-east-2.rds.amazonaws.com';
 // process.env.AWSRDS_EP;
 // db_credentials.host = 'mypostgresql.c6c8mwvfdgv0.us-west-2.rds.amazonaws.com';
 
