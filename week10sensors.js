@@ -1,7 +1,5 @@
 var express = require('express'),
     app = express();
-var moment = require('moment');
-require("moment-duration-format");
 const { Pool } = require('pg');
 
 // AWS RDS POSTGRESQL INSTANCE
@@ -44,8 +42,4 @@ app.listen(3000, function() {
     console.log('Server listening...');
 });
 
-            //  sum (count(if weightvalue => 15)) as running_time,
-            //  sum (moment.duration().asMinutes()) if weightvalue >= 15 as running_time, 
-//   SELECT potentsensor FROM gracesensors WHERE potentsensor = 'motivated',
-//              SELECT potentsensor FROM gracesensors WHERE potentsensor = 'unmotivated',
-//              SELECT fsrsensor FROM gracesensors WHERE fsrsensor >= 15 
+          
