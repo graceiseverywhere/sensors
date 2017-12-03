@@ -10,7 +10,7 @@ var addresses =JSON.parse(
    )
 
    // Connection URL
-   var url = 'mongodb://cluster0-shard-00-00-rzdcl.mongodb.net:27017,cluster0-shard-00-01-rzdcl.mongodb.net:27017,cluster0-shard-00-02-rzdcl.mongodb.net:27017/grace?replicaSet=Cluster0-shard-0';
+   var url = 'mongodb://cluster0-shard-00-00-rzdcl.mongodb.net:27017,cluster0-shard-00-01-rzdcl.mongodb.net:27017,cluster0-shard-00-02-rzdcl.mongodb.net:27017/grace?replicaSet=Cluster0-shard-0' + process.env.IP + ':27017/' + dbName;
 
    // Retrieve
    var MongoClient = require('mongodb').MongoClient;
