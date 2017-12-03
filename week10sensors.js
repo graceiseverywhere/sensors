@@ -29,7 +29,6 @@ app.get('/', function(req, res) {
              GROUP BY sensormonth, sensorday;`;
              
              
-             var q = `SELECT * FROM gracesensors;`
     client.connect();
     client.query(q, (qerr, qres) => {
         res.send(qres.rows);
