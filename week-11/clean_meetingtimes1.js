@@ -14,12 +14,13 @@ var item = {};
 // select the table row of each address
 $('tbody tr[style = "margin-bottom:10px"]').each(function(i, elem) {
     var item = {};
+    item.meetingname = $(elem).html().replace(/<b>/g, "").split('<br>')[1].trim().split("&apos;").join("'").split(/-/)[0].split(/\(/)[0].split("  ")[0];
     item.addressall = $(elem).html().split('<br>')[2].trim().split("&apos;").join("'");
     item.address = item.addressall.substring(0, item.addressall.indexOf(',')).split(/-/)[0] +','+ ' '+ "New York, NY";
     delete item.addressall; 
     item.wheelchair = $(elem).find('span').text().trim(); //printing wheelchair access
     item.details = $(elem).find('.detailsBox').text().trim(); //printing the details box
-    // console.log(item.addressclean);
+    // console.log(item.meetingname);
 
      //print meeting times as an array of objects
      item.meetingtimes = [];
@@ -38,7 +39,9 @@ $('tbody tr[style = "margin-bottom:10px"]').each(function(i, elem) {
                     temp.time_end = temp.time[1];
                     delete temp.time;
                      // to get meeting type
-                    temp.type = timeArr[j + 1].slice(19, timeArr[j].length).trim().replace("</b>",""); 
+                    temp.type1 = timeArr[j + 1].slice(19, timeArr[j].length).trim().replace("</b>",""); 
+                    temp.type = temp.type1.substring(temp.type1.indexOf('=')).replace("= ","");
+                    delete temp.type1;
                 //   console.log(temp)
                     // to get special interest
                     temp.special = (timeArr[j + 2].match(/special/gi) !== null)
@@ -50,5 +53,5 @@ $('tbody tr[style = "margin-bottom:10px"]').each(function(i, elem) {
     output.push(item);
 });
 
-// console.log(JSON.stringify(output))  
-fs.writeFileSync('aameetingsclean10.json',JSON.stringify(output),'utf8');
+console.log(JSON.stringify(output))  
+// fs.writeFileSync('aameetingsclean10.json',JSON.stringify(output),'utf8');

@@ -1,11 +1,12 @@
 var express = require('express'),
     app = express();
 var fs = require('fs');
+var moment = require('moment-timezone');
 
 // Postgres
 const { Pool } = require('pg');
 var db_credentials = new Object();
-db_credentials.user = 'aaron';
+db_credentials.user = 'grace';
 db_credentials.host = process.env.AWSRDS_EP;
 db_credentials.database = 'sensors';
 db_credentials.password = process.env.AWSRDS_PW;
@@ -17,8 +18,8 @@ var MongoClient = require('mongodb').MongoClient;
 var url = process.env.ATLAS;
 
 // HTML wrappers for AA data
-var index1 = fs.readFileSync("index1.txt");
-var index3 = fs.readFileSync("index3.txt");
+var index1 = fs.readFileSync("../week-11/index1.txt");
+var index3 = fs.readFileSync("../week-11/index3.txt");
 
 app.get('/', function(req, res) {
     // Connect to the AWS RDS Postgres database
@@ -28,11 +29,11 @@ app.get('/', function(req, res) {
     var q = `SELECT EXTRACT(DAY FROM sensortime AT TIME ZONE 'America/New_York') as sensorday, 
              EXTRACT(MONTH FROM sensortime AT TIME ZONE 'America/New_York') as sensormonth, 
              count(*) as num_obs, 
-             max(lightsensor) as max_light, 
-             min(lightsensor) as min_light,
-             max(tempsensor) as max_temp, 
-             min(tempsensor) as min_temp
-             FROM sensordata 
+             
+             sum (CASE WHEN potentsensor = 'motivated' THEN 1 ELSE 0 END) as total_motivated, 
+             sum (CASE WHEN fsrsensor >= 15 THEN 1 ELSE 0 END) as running_time 
+
+             FROM gracesensors 
              GROUP BY sensormonth, sensorday;`;
              
     client.connect();
@@ -49,23 +50,25 @@ app.get('/aa', function(req, res) {
         if (err) {return console.dir(err);}
         
         var dateTimeNow = new Date();
+        var newYork    = moment.tz("2014-06-01 12:00", "America/New_York");
         var today = dateTimeNow.getDay();
         var tomorrow;
-        if (today == 6) {tomorrow = 0;}
+        if (today == 0) {tomorrow = 1;}
         else {tomorrow = today + 1}
+        
         var hour = dateTimeNow.getHours();
-
+        var lasthour = 4; 
         var collection = db.collection(collName);
     
         collection.aggregate([ // start of aggregation pipeline
-            // match by day and time
+            // match by day and time so it matches to othe current time and 4 am the next day 
             { $match : 
                 { $or : [
                     { $and: [
-                        { dayQuery : 2 } , { hourQuery : { $gte: 19 } }
+                        { dayQuery : today } , { hourQuery : { $gte: hour } }
                     ]},
                     { $and: [
-                        { dayQuery : 3 } , { hourQuery : { $lte: 4 } }
+                        { dayQuery : tomorrow } , { hourQuery : { $lte: lasthour } }
                     ]}
                 ]}
             },
@@ -74,15 +77,16 @@ app.get('/aa', function(req, res) {
             { $group : { _id : {
                 latLong : "$latLong",
                 meetingName : "$meetingName",
-                meetingAddress1 : "$meetingAddress1",
-                meetingAddress2 : "$meetingAddress2",
-                borough : "$borough",
-                meetingDetails : "$meetingDetails",
-                meetingWheelchair : "$meetingWheelchair",
+                address : "$adddress",
+                // meetingAddress2 : "$meetingAddress2",
+                // borough : "$borough",
+                details : "$details",
+                wheelchair : "$wheelchair",
                 },
-                    meetingDay : { $push : "$day" },
-                    meetingStartTime : { $push : "$startTime" }, 
-                    meetingType : { $push : "$meetingType" }
+                    meetingDay : { $push : "$weekday" },
+                    meetingStartTime : { $push : "$time_start" }, 
+                    meetingEndTime : { $push : "$time_end" }, 
+                    meetingType : { $push : "$type" }
             }
             },
             
