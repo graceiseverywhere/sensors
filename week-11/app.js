@@ -49,26 +49,40 @@ app.get('/aa', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) {return console.dir(err);}
         
-        var dateTimeNow = new Date();
-        var newYork    = moment.tz("2014-06-01 12:00", "America/New_York");
-        var today = dateTimeNow.getDay();
+        // var dateTimeNow = new Date();
+        // var dateTimeNow = moment(new Date ());
+
+        // dateTimeNow.tz("2014-06-01 12:00", "America/New_York");
+        var today = moment.tz(new Date(), "America/New_York").days();
+        console.log(today);
+        var currentDay;
         var tomorrow;
-        if (today == 0) {tomorrow = 1;}
-        else {tomorrow = today + 1}
+        if (today == 0) {currentDay = 'Sundays'; tomorrow = 'Mondays'}
+        else if (today == 1) {currentDay = 'Mondays'; tomorrow = 'Tuesdays'}
+        else if (today == 2) {currentDay = 'Tuesdays'; tomorrow = 'Wednesdays'}
+        else if (today == 3) {currentDay = 'Wednesdays'; tomorrow = 'Thursdays'}
+        else if (today == 4) {currentDay = 'Thursdays'; tomorrow = 'Fridays'}
+        else if (today == 5) {currentDay = 'Fridays'; tomorrow = 'Saturdays'}
+        else if (today == 6) {currentDay = 'Saturdays'; tomorrow = 'Sundays'};
         
-        var hour = dateTimeNow.getHours();
-        var lasthour = 4; 
+        var currentHour = moment.tz(new Date(), "America/New_York").hours();
+        var lastHour = 4;
+
+        
         var collection = db.collection(collName);
-    
+        
         collection.aggregate([ // start of aggregation pipeline
-            // match by day and time so it matches to othe current time and 4 am the next day 
+            // match by day and time so it matches to the current time and 4 am the next day 
+            
+            { $unwind : "$meetingtimes"}, 
+            
             { $match : 
                 { $or : [
                     { $and: [
-                        { dayQuery : today } , { hourQuery : { $gte: hour } }
+                        { "meetingtimes.weekDay" : currentDay } , { "meetingtimes.time_starthour" : { $gte: currentHour } }
                     ]},
                     { $and: [
-                        { dayQuery : tomorrow } , { hourQuery : { $lte: lasthour } }
+                        { "meetingtimes.weekDay" : tomorrow } , { "meetingtimes.time_starthour" : { $lte: lastHour } }
                     ]}
                 ]}
             },
@@ -76,17 +90,18 @@ app.get('/aa', function(req, res) {
             // group by meeting group
             { $group : { _id : {
                 latLong : "$latLong",
-                meetingName : "$meetingName",
-                address : "$adddress",
+                meetingname : "$meetingname",
+                address : "$address",
                 // meetingAddress2 : "$meetingAddress2",
                 // borough : "$borough",
                 details : "$details",
                 wheelchair : "$wheelchair",
                 },
-                    meetingDay : { $push : "$weekday" },
-                    meetingStartTime : { $push : "$time_start" }, 
-                    meetingEndTime : { $push : "$time_end" }, 
-                    meetingType : { $push : "$type" }
+                    meetingDay : { $push : "$meetingtimes.weekDay" },
+                    meetingStartTime : { $push : "$meetingtimes.time_start" }, 
+                    meetingEndTime : { $push : "$meetingtimes.time_end" }, 
+                    meetingType : { $push : "$meetingtimes.meetingtype" }
+                    
             }
             },
             
@@ -94,7 +109,7 @@ app.get('/aa', function(req, res) {
             {
                 $group : { _id : { 
                     latLong : "$_id.latLong"},
-                    meetingGroups : { $push : {groupInfo : "$_id", meetingDay : "$meetingDay", meetingStartTime : "$meetingStartTime", meetingType : "$meetingType" }}
+                    meetingtimes : { $push : {groupInfo : "$_id", meetingDay : "$meetingDay", meetingStartTime : "$meetingStartTime", meetingEndTime : "$meetingEndTime", meetingType : "$meetingType"}}
                 }
             }
         
@@ -102,6 +117,7 @@ app.get('/aa', function(req, res) {
             if (err) {console.log(err)}
             
             else {
+                // console.log("aa")
                 res.writeHead(200, {'content-type': 'text/html'});
                 res.write(index1);
                 res.write(JSON.stringify(docs));
@@ -113,7 +129,9 @@ app.get('/aa', function(req, res) {
     
 });
 
-// app.listen(process.env.PORT, function() {
-app.listen(3000, function() {
+app.listen(process.env.PORT, function() {
+
+// app.listen(3000, function() {
     console.log('Server listening...');
+    
 });

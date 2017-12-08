@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var meetings = JSON.parse(fs.readFileSync('../week-11/final_lat_long/parsedlatlong10.json'));
+var meetings = JSON.parse(fs.readFileSync('../week-11/final_lat_long/aameetings_latlong.json'));
 
 // Connection URL
 // var url = 'mongodb://' + process.env.IP + ':27017/aa';

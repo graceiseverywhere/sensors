@@ -4,41 +4,41 @@
             var contentHolder = '<div id="content">' +
                 '<div id="siteNotice">' +
                 '</div>';
-            for (var i = 0; i < cont.meetingGroups.length; i++) {
+            for (var i = 0; i < cont.meetingtimes.length; i++) {
             if (i == 0) {
-                contentHolder = contentHolder + '<h2>' + cont.meetingGroups[i].groupInfo.meetingAddress1.substr(0, cont.meetingGroups[i].groupInfo.meetingAddress1.indexOf(',')) + '</h2>';
+                contentHolder = contentHolder + '<h2>' + cont.meetingtimes[i].groupInfo.address.substr(0, cont.meetingtimes[i].groupInfo.address.indexOf(',')) + '</h2>';
             } 
                 contentHolder = contentHolder + '<h1 id="firstHeading" class="firstHeading">';
-                contentHolder = contentHolder + cont.meetingGroups[i].groupInfo.meetingName + '</h1>';
+                contentHolder = contentHolder + cont.meetingtimes[i].groupInfo.meetingname + '</h1>';
                 
-                for (var j = 0; j < cont.meetingGroups[i].meetingType.length; j++) {
+                for (var j = 0; j < cont.meetingtimes[i].meetingType.length; j++) {
                     var mt, si;
-                    if (cont.meetingGroups[i].meetingType[j] == "BB") {
+                    if (cont.meetingtimes[i].meetingType[j] == "BB") {
                         mt = "Big Book ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "B") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "B") {
                         mt = "Beginners ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "C") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "C") {
                         mt = "Closed Discussion ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "S") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "S") {
                         mt = "Step ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "T") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "T") {
                         mt = "Tradition ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "O") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "O") {
                         mt = "Open Meeting ";
                     }
-                    else if (cont.meetingGroups[i].meetingType[j] == "OD") {
+                    else if (cont.meetingtimes[i].meetingType[j] == "OD") {
                         mt = "Open Discussion ";
                     }
                     else {
                         mt = "";
                     }
 
-                    contentHolder = contentHolder + cont.meetingGroups[i].meetingStartTime[j] + ' ' + mt + '<br>';
+                    contentHolder = contentHolder + cont.meetingtimes[i].meetingStartTime[j] + ' ' + mt + '<br>';
                 }
                 contentHolder = contentHolder + '</p>';
                 contentHolder = contentHolder + '<div class="iw-bottom-gradient"></div>';
@@ -54,7 +54,7 @@
 
             for (var i = 0; i < locations.length; i++) {
                 var meeting = locations[i];
-                var myLatLng = new google.maps.LatLng(meeting._id.latLong[0], meeting._id.latLong[1]);
+                var myLatLng = new google.maps.LatLng(meeting._id.latLong);
 
                 var contentWindow = makeContent(meetings[i]);
 

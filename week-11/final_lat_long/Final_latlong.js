@@ -11,21 +11,30 @@ var apiKey = process.env.googlekey;
 
 var meetingsData = [];
 var address =JSON.parse(
-        fs.readFileSync('../aameetingsclean10.json') // this is from the cleaned json files  
+        fs.readFileSync('../aameetingsanslatlong.json') // this is from the cleaned json files  
     )
-
+// console.log(address);
 // eachSeries in the async module iterates over an array and operates on each item in the array in series
 async.eachSeries(address, function(value, callback) {
+
     var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + value.address.split(' ').join('+') + '&key=' + apiKey;
-   var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + value.address.split(' ').join('+') + '&key=' + apiKey;
     request(apiRequest, function(err, resp, body) {
+        
         if (err) {throw err;}
         if(JSON.parse(body).status !== "ZERO_RESULTS"){
-            value.latLong = JSON.parse(body).results[0].geometry.location;   
+            if(JSON.parse(body).results[0].geometry !== undefined){
+                value.latLong = JSON.parse(body).results[0].geometry.location;   
+            } else {
+                value.latLong = null;
+            }
         }
+        console.log(value)
+        console.log("___________________")
+        
+        
     });
-    setTimeout(callback, 2000);
+    setTimeout(callback, 1000);
 }, function() {
-    fs.writeFileSync('parsedlatlong10.json',JSON.stringify(address),'utf8');
+    fs.writeFileSync('aameetings_latlong.json',JSON.stringify(address),'utf8');
     
 });
