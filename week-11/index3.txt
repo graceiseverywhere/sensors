@@ -38,7 +38,7 @@
                         mt = "";
                     }
 
-                    contentHolder = contentHolder + cont.meetingtimes[i].meetingStartTime[j] + ' ' + mt + '<br>';
+                    contentHolder = contentHolder + cont.meetingtimes[i].meetingDay[j] + '<br>' + cont.meetingtimes[i].meetingStartTime[j] + ' ' + cont.meetingtimes[i].meetingType[j] + ' ' + mt + '<br>';
                 }
                 contentHolder = contentHolder + '</p>';
                 contentHolder = contentHolder + '<div class="iw-bottom-gradient"></div>';

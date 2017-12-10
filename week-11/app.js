@@ -30,7 +30,7 @@ app.get('/', function(req, res) {
              EXTRACT(MONTH FROM sensortime AT TIME ZONE 'America/New_York') as sensormonth, 
              count(*) as num_obs, 
              
-             sum (CASE WHEN potentsensor = 'motivated' THEN 1 ELSE 0 END) as total_motivated, 
+             sum (CASE WHEN potentsensor = 'Motivated' THEN 1 ELSE 0 END) as total_motivated, 
              sum (CASE WHEN fsrsensor >= 15 THEN 1 ELSE 0 END) as running_time 
 
              FROM gracesensors 
@@ -46,6 +46,8 @@ app.get('/', function(req, res) {
 
 app.get('/aa', function(req, res) {
 
+    console.log(url);
+    console.log("========");
     MongoClient.connect(url, function(err, db) {
         if (err) {return console.dir(err);}
         
@@ -54,7 +56,8 @@ app.get('/aa', function(req, res) {
 
         // dateTimeNow.tz("2014-06-01 12:00", "America/New_York");
         var today = moment.tz(new Date(), "America/New_York").days();
-        console.log(today);
+        // console.log(today);
+        console.log(db);
         var currentDay;
         var tomorrow;
         if (today == 0) {currentDay = 'Sundays'; tomorrow = 'Mondays'}
@@ -109,7 +112,7 @@ app.get('/aa', function(req, res) {
             {
                 $group : { _id : { 
                     latLong : "$_id.latLong"},
-                    meetingtimes : { $push : {groupInfo : "$_id", meetingDay : "$meetingDay", meetingStartTime : "$meetingStartTime", meetingEndTime : "$meetingEndTime", meetingType : "$meetingType"}}
+                    meetingtimes : { $push : {groupInfo : "$_id", meetingDay : "$meetingDay", meetingStartTime : "$meetingStartTime", meetingEndTime : "$meetingEndTime", meetingType : "$meetingType", details : "$details",}}
                 }
             }
         
@@ -129,9 +132,9 @@ app.get('/aa', function(req, res) {
     
 });
 
-app.listen(process.env.PORT, function() {
+// app.listen(process.env.PORT, function() {
 
-// app.listen(3000, function() {
+app.listen(8080, function() {
     console.log('Server listening...');
     
 });
